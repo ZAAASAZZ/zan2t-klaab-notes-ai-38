@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { SubjectSelect } from "@/components/SubjectSelect";
 import { BlockGrid } from "@/components/BlockGrid";
 import { NoteEditor } from "@/components/NoteEditor";
+import { FullCurriculumInput } from "@/components/FullCurriculumInput";
 import { loadNotes, saveNotes } from "@/utils/storage";
 import { Button } from "@/components/ui/button";
 import { Edit3, Moon, Sun, Search } from "lucide-react";
