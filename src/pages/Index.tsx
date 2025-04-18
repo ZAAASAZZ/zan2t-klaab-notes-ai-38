@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { StudyAssistant } from "@/components/StudyAssistant";
+
 export default function Index() {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedBlock, setSelectedBlock] = useState<number | null>(null);
@@ -18,6 +20,7 @@ export default function Index() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     const savedDarkMode = localStorage.getItem("darkMode");
     if (savedDarkMode === "true") {
@@ -26,9 +29,11 @@ export default function Index() {
     }
     setNotes(loadNotes());
   }, []);
+
   useEffect(() => {
     saveNotes(notes);
   }, [notes]);
+
   const handleSaveNote = (content: string) => {
     if (selectedSubject && selectedBlock) {
       setNotes(prev => ({
@@ -41,6 +46,7 @@ export default function Index() {
       toast.success("Notes saved!");
     }
   };
+
   const handleSaveFullCurriculum = (blockNotes: {
     [block: string]: string;
   }) => {
@@ -55,6 +61,7 @@ export default function Index() {
       toast.success("Full curriculum processed and saved across all blocks!");
     }
   };
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     if (!isDarkMode) {
@@ -65,6 +72,7 @@ export default function Index() {
       localStorage.setItem("darkMode", "false");
     }
   };
+
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
     if (!isSearchOpen) {
@@ -73,6 +81,7 @@ export default function Index() {
       }, 100);
     }
   };
+
   const subjectIconMap: Record<string, string> = {
     biology: "🧬",
     chemistry: "🧪",
@@ -84,12 +93,21 @@ export default function Index() {
     social: "🌎",
     ict: "💻"
   };
+
   return <div className={cn("min-h-screen bg-gradient-to-br", "from-gray-50 to-white", "transition-colors duration-300", isDarkMode && "dark bg-gradient-to-br from-gray-900 to-gray-800")}>
       <header className={cn("py-6 px-6", "bg-white/90 backdrop-blur-md shadow-sm", "dark:bg-gray-800/90 dark:border-b dark:border-gray-700", "sticky top-0 z-10")}>
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <BookOpen className={cn("h-7 w-7", selectedSubject ? `text-${selectedSubject}` : "text-blue-500")} />
-            <h1 className="text-2xl font-semibold text-[#348f34]"> Zan2t Klaab Notes - Grade 9 - NEIS Sadat</h1>
+            <BookOpen className={cn(
+              "h-7 w-7 transition-colors duration-300",
+              selectedSubject ? `text-${selectedSubject}` : "text-blue-500"
+            )} />
+            <h1 className={cn(
+              "text-2xl font-semibold transition-colors duration-300",
+              selectedSubject ? `text-${selectedSubject}` : "text-blue-500"
+            )}>
+              Zan2t Klaab Notes - Grade 9 - NEIS Sadat
+            </h1>
           </div>
           
           <div className="flex gap-2 relative">
@@ -185,5 +203,7 @@ export default function Index() {
 
         {isEditing && selectedSubject && selectedBlock && <NoteEditor content={notes[selectedSubject]?.[selectedBlock] || ""} onSave={handleSaveNote} subject={selectedSubject} onClose={() => setIsEditing(false)} />}
       </main>
+
+      <StudyAssistant notes={notes} selectedSubject={selectedSubject} />
     </div>;
 }
