@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { StudyAssistant } from "@/components/StudyAssistant";
+import { TutorialGuide } from "@/components/TutorialGuide";
 
 export default function Index() {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -111,6 +112,7 @@ export default function Index() {
           </div>
           
           <div className="flex gap-2 relative">
+            <TutorialGuide />
             <AnimatePresence>
               {isSearchOpen && <motion.div initial={{
               width: 0,
