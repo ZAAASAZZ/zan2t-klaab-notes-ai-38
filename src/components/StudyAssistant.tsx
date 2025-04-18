@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Bot, X, Send, AlertTriangle } from "lucide-react";
+import { Bot, Send, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -17,11 +17,19 @@ interface StudyAssistantProps {
   selectedSubject: string | null;
 }
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  hasMore?: boolean;
+  expandedContent?: string;
+}
+
 export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedMessages, setExpandedMessages] = useState<number[]>([]);
 
   const generateContextFromNotes = () => {
     if (!selectedSubject || !notes[selectedSubject]) return "";
@@ -53,20 +61,20 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
               {
                 parts: [
                   {
-                    text: `You are a knowledgeable and helpful study assistant. When responding to questions:
+                    text: `You are a friendly study helper AI. When answering questions:
 
-1. Keep answers concise and direct - aim for 2-3 short paragraphs maximum
-2. Use simple, clear language that's easy to understand
-3. Break down complex concepts into basic terms
-4. Focus on the core explanation without mentioning sources or references
-5. If relevant, include 1-2 quick examples to illustrate the point
-6. For questions outside the notes, provide accurate, factual responses using your general knowledge
-7. Format responses with proper spacing and structure for readability
-8. Highlight key terms or important points when needed
+1. Give the main answer first in 1-2 short, simple lines
+2. Then provide a SEPARATE expanded explanation using basic terms and 1-2 easy examples
+3. Split your response with "---" between the brief and expanded answer
+4. Use very simple words and short sentences
+5. Be friendly and clear, like explaining to a beginner
+6. Don't use complex terms without explaining them
+7. Don't reference notes or sources - just explain directly
+8. Keep the tone calm and helpful
 
 Question: ${message}
 
-Context from notes (use this knowledge but don't reference it directly): ${context}`
+Context (use this knowledge but don't mention it): ${context}`
                   }
                 ]
               }
@@ -85,10 +93,17 @@ Context from notes (use this knowledge but don't reference it directly): ${conte
       }
 
       const data = await response.json();
-      const aiResponse = data.candidates[0]?.content?.parts?.[0]?.text || 
+      const fullResponse = data.candidates[0]?.content?.parts?.[0]?.text || 
         "I apologize, but I couldn't generate a response. Please try asking your question in a different way.";
 
-      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+      const [briefAnswer, expandedAnswer] = fullResponse.split('---').map(part => part.trim());
+      
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: briefAnswer || fullResponse,
+        hasMore: !!expandedAnswer,
+        expandedContent: expandedAnswer
+      }]);
     } catch (error) {
       console.error("Error getting AI response:", error);
       setMessages(prev => [...prev, { 
@@ -98,6 +113,14 @@ Context from notes (use this knowledge but don't reference it directly): ${conte
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleExpand = (index: number) => {
+    setExpandedMessages(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
   };
 
   return (
@@ -141,14 +164,43 @@ Context from notes (use this knowledge but don't reference it directly): ${conte
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className={cn(
-                  "mb-4 p-3 rounded-lg max-w-[80%]",
+                className="mb-4"
+              >
+                <div className={cn(
+                  "p-3 rounded-lg max-w-[80%]",
                   msg.role === 'user' 
                     ? "ml-auto bg-primary text-primary-foreground" 
                     : "bg-muted"
+                )}>
+                  {msg.content}
+                  {msg.hasMore && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 w-full flex items-center gap-2 text-xs"
+                      onClick={() => toggleExpand(index)}
+                    >
+                      {expandedMessages.includes(index) ? "Show Less" : "Show More"}
+                      <ChevronDown className={cn(
+                        "h-4 w-4 transition-transform",
+                        expandedMessages.includes(index) && "rotate-180"
+                      )} />
+                    </Button>
+                  )}
+                </div>
+                {msg.hasMore && expandedMessages.includes(index) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className={cn(
+                      "mt-2 p-3 rounded-lg bg-muted/50 text-sm",
+                      "max-w-[80%]"
+                    )}
+                  >
+                    {msg.expandedContent}
+                  </motion.div>
                 )}
-              >
-                {msg.content}
               </motion.div>
             ))}
             {isLoading && (
