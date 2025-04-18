@@ -1,6 +1,6 @@
 
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface BlockGridProps {
   subject: string;
@@ -11,10 +11,30 @@ interface BlockGridProps {
 export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridProps) {
   const blocks = Array.from({ length: 6 }, (_, i) => i + 1);
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-6 animate-fade-in">
+    <motion.div 
+      className="grid grid-cols-2 md:grid-cols-3 gap-4 p-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {blocks.map((block) => (
-        <button
+        <motion.button
           key={block}
           onClick={() => onSelectBlock(block)}
           className={cn(
@@ -22,13 +42,14 @@ export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridPr
             "hover:scale-105 hover:shadow-lg",
             "focus:outline-none focus:ring-2 focus:ring-offset-2",
             selectedBlock === block
-              ? `bg-${subject} text-${subject}-foreground shadow-lg scale-105`
-              : "bg-white/50 shadow-sm hover:bg-white/80"
+              ? `bg-${subject}/20 border-2 border-${subject} shadow-lg scale-105`
+              : "bg-white/50 shadow-sm backdrop-blur-sm hover:bg-white/80 border border-gray-100"
           )}
+          variants={item}
         >
           <span className="text-lg font-medium">Block {block}</span>
-        </button>
+        </motion.button>
       ))}
-    </div>
+    </motion.div>
   );
 }

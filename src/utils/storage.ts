@@ -18,6 +18,12 @@ export const loadNotes = (): Notes => {
       biology: {},
       chemistry: {},
       ict: {},
+      physics: {},
+      maths: {},
+      english: {},
+      arabic: {},
+      french: {},
+      social: {},
     };
   }
   return JSON.parse(stored);
