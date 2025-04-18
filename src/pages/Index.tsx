@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { SubjectSelect } from "@/components/SubjectSelect";
 import { BlockGrid } from "@/components/BlockGrid";
@@ -19,14 +18,12 @@ export default function Index() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   useEffect(() => {
-    // Check for dark mode preference
     const savedDarkMode = localStorage.getItem("darkMode");
     if (savedDarkMode === "true") {
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
     }
     
-    // Load notes from storage
     setNotes(loadNotes());
   }, []);
 
@@ -47,7 +44,19 @@ export default function Index() {
       toast.success("Notes saved!");
     }
   };
-  
+
+  const handleSaveFullCurriculum = (blockNotes: { [block: string]: string }) => {
+    if (selectedSubject) {
+      setNotes(prev => ({
+        ...prev,
+        [selectedSubject]: {
+          ...prev[selectedSubject],
+          ...blockNotes
+        }
+      }));
+    }
+  };
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     if (!isDarkMode) {
@@ -67,7 +76,9 @@ export default function Index() {
     )}>
       <header className="py-6 px-6 bg-white shadow-sm dark:bg-gray-800 dark:border-b dark:border-gray-700">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Zan2t Klaab Notes</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            Zan2t Klaab Notes
+          </h1>
           
           <div className="flex gap-2">
             <Button 
@@ -88,11 +99,20 @@ export default function Index() {
       </header>
       
       <main className="container mx-auto py-8 px-4">
-        <SubjectSelect 
-          onSelect={setSelectedSubject}
-          selectedSubject={selectedSubject}
-        />
-        
+        <div className="flex items-center justify-between mb-6">
+          <SubjectSelect 
+            onSelect={setSelectedSubject}
+            selectedSubject={selectedSubject}
+          />
+          
+          {selectedSubject && (
+            <FullCurriculumInput 
+              subject={selectedSubject}
+              onSaveNotes={handleSaveFullCurriculum}
+            />
+          )}
+        </div>
+
         <AnimatePresence mode="wait">
           {selectedSubject && (
             <motion.div
