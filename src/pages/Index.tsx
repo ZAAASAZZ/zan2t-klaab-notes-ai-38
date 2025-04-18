@@ -3,6 +3,7 @@ import { SubjectSelect } from "@/components/SubjectSelect";
 import { BlockGrid } from "@/components/BlockGrid";
 import { NoteEditor } from "@/components/NoteEditor";
 import { FullCurriculumInput } from "@/components/FullCurriculumInput";
+import { ResourceUploader } from "@/components/ResourceUploader";
 import { loadNotes, saveNotes } from "@/utils/storage";
 import { Button } from "@/components/ui/button";
 import { Edit3, Moon, Sun, Search, BookOpen } from "lucide-react";
@@ -145,7 +146,10 @@ export default function Index() {
         <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
           <SubjectSelect onSelect={setSelectedSubject} selectedSubject={selectedSubject} />
           
-          {selectedSubject && <FullCurriculumInput subject={selectedSubject} onSaveNotes={handleSaveFullCurriculum} />}
+          <div className="flex space-x-2">
+            {selectedSubject && <ResourceUploader subject={selectedSubject} onGenerateNotes={handleSaveFullCurriculum} />}
+            {selectedSubject && <FullCurriculumInput subject={selectedSubject} onSaveNotes={handleSaveFullCurriculum} />}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
