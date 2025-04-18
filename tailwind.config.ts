@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Add subject-specific colors
+				biology: 'hsl(var(--biology))',
+				'biology-foreground': 'hsl(var(--biology-foreground))',
+				chemistry: 'hsl(var(--chemistry))',
+				'chemistry-foreground': 'hsl(var(--chemistry-foreground))',
+				physics: 'hsl(var(--physics))',
+				'physics-foreground': 'hsl(var(--physics-foreground))',
+				maths: 'hsl(var(--maths))',
+				'maths-foreground': 'hsl(var(--maths-foreground))',
+				english: 'hsl(var(--english))',
+				'english-foreground': 'hsl(var(--english-foreground))',
+				arabic: 'hsl(var(--arabic))',
+				'arabic-foreground': 'hsl(var(--arabic-foreground))',
+				french: 'hsl(var(--french))',
+				'french-foreground': 'hsl(var(--french-foreground))',
+				social: 'hsl(var(--social))',
+				'social-foreground': 'hsl(var(--social-foreground))',
+				ict: 'hsl(var(--ict))',
+				'ict-foreground': 'hsl(var(--ict-foreground))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

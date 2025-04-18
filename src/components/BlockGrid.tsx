@@ -44,6 +44,14 @@ export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridPr
     return emojiMap[subject]?.[blockNumber - 1] || "📔";
   };
 
+  // Helper function to safely generate dynamic classes
+  const getSubjectGradient = (selected: boolean) => {
+    if (selected) {
+      return `bg-${subject} text-${subject}-foreground`;
+    }
+    return `text-${subject} dark:text-${subject}/90`;
+  };
+
   return (
     <motion.div 
       className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-4 p-4"
@@ -61,8 +69,17 @@ export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridPr
             "hover:scale-105 hover:shadow-lg focus:outline-none",
             selectedBlock === block
               ? cn(
-                  "bg-gradient-to-br shadow-lg scale-105",
-                  `from-${subject} to-${subject}/70 text-white`
+                  "shadow-lg scale-105",
+                  subject === "biology" ? "bg-biology text-biology-foreground" :
+                  subject === "chemistry" ? "bg-chemistry text-chemistry-foreground" :
+                  subject === "physics" ? "bg-physics text-physics-foreground" :
+                  subject === "maths" ? "bg-maths text-maths-foreground" :
+                  subject === "english" ? "bg-english text-english-foreground" :
+                  subject === "arabic" ? "bg-arabic text-arabic-foreground" :
+                  subject === "french" ? "bg-french text-french-foreground" :
+                  subject === "social" ? "bg-social text-social-foreground" :
+                  subject === "ict" ? "bg-ict text-ict-foreground" :
+                  "bg-blue-500 text-white"
                 )
               : cn(
                   "bg-white/50 shadow-sm backdrop-blur-sm border border-gray-100",
@@ -79,7 +96,16 @@ export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridPr
             "text-sm font-medium",
             selectedBlock === block 
               ? "" 
-              : `text-${subject} dark:text-${subject}/90`
+              : subject === "biology" ? "text-biology dark:text-biology/90" :
+                subject === "chemistry" ? "text-chemistry dark:text-chemistry/90" :
+                subject === "physics" ? "text-physics dark:text-physics/90" :
+                subject === "maths" ? "text-maths dark:text-maths/90" :
+                subject === "english" ? "text-english dark:text-english/90" :
+                subject === "arabic" ? "text-arabic dark:text-arabic/90" :
+                subject === "french" ? "text-french dark:text-french/90" :
+                subject === "social" ? "text-social dark:text-social/90" :
+                subject === "ict" ? "text-ict dark:text-ict/90" :
+                "text-blue-500 dark:text-blue-400"
           )}>
             Block {block}
           </span>
@@ -88,7 +114,17 @@ export function BlockGrid({ subject, onSelectBlock, selectedBlock }: BlockGridPr
           <motion.div 
             className={cn(
               "w-2 h-2 rounded-full mt-2",
-              selectedBlock === block ? "bg-white/70" : `bg-${subject}/40`
+              selectedBlock === block ? "bg-white/70" : 
+                subject === "biology" ? "bg-biology/40" :
+                subject === "chemistry" ? "bg-chemistry/40" :
+                subject === "physics" ? "bg-physics/40" :
+                subject === "maths" ? "bg-maths/40" :
+                subject === "english" ? "bg-english/40" :
+                subject === "arabic" ? "bg-arabic/40" :
+                subject === "french" ? "bg-french/40" :
+                subject === "social" ? "bg-social/40" :
+                subject === "ict" ? "bg-ict/40" :
+                "bg-blue-500/40"
             )}
             initial={{ scale: 0.8 }}
             animate={{ scale: [0.8, 1, 0.8] }}
