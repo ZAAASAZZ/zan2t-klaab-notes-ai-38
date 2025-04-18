@@ -25,10 +25,9 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
 
   const generateContextFromNotes = () => {
     if (!selectedSubject || !notes[selectedSubject]) return "";
-    
-    let context = `Here are the relevant notes for ${selectedSubject}:\n\n`;
+    let context = "";
     Object.entries(notes[selectedSubject]).forEach(([block, content]) => {
-      context += `Block ${block}:\n${content}\n\n`;
+      context += `${content}\n`;
     });
     return context;
   };
@@ -36,7 +35,6 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
 
-    // Add user message
     setMessages(prev => [...prev, { role: 'user', content: message }]);
     setIsLoading(true);
     setMessage("");
@@ -55,12 +53,20 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
               {
                 parts: [
                   {
-                    text: `You are an AI study assistant helping a student with their ${selectedSubject || "studies"}. 
-                    Use the following context from their notes to provide accurate and helpful answers:\n\n${context}\n\n
-                    Based on these notes and your knowledge, please answer the following question: ${message}
-                    
-                    If the question is not directly related to the notes, use your knowledge to provide a helpful response while encouraging the student to refer to their notes.
-                    Keep responses concise, friendly, and focused on helping the student understand the material better.`
+                    text: `You are a knowledgeable and helpful study assistant. When responding to questions:
+
+1. Keep answers concise and direct - aim for 2-3 short paragraphs maximum
+2. Use simple, clear language that's easy to understand
+3. Break down complex concepts into basic terms
+4. Focus on the core explanation without mentioning sources or references
+5. If relevant, include 1-2 quick examples to illustrate the point
+6. For questions outside the notes, provide accurate, factual responses using your general knowledge
+7. Format responses with proper spacing and structure for readability
+8. Highlight key terms or important points when needed
+
+Question: ${message}
+
+Context from notes (use this knowledge but don't reference it directly): ${context}`
                   }
                 ]
               }
@@ -68,7 +74,7 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
             generationConfig: {
               temperature: 0.3,
               topP: 0.8,
-              maxOutputTokens: 800
+              maxOutputTokens: 400
             }
           })
         }
@@ -79,7 +85,8 @@ export function StudyAssistant({ notes, selectedSubject }: StudyAssistantProps) 
       }
 
       const data = await response.json();
-      const aiResponse = data.candidates[0]?.content?.parts?.[0]?.text || "I apologize, but I couldn't generate a response. Please try asking your question in a different way.";
+      const aiResponse = data.candidates[0]?.content?.parts?.[0]?.text || 
+        "I apologize, but I couldn't generate a response. Please try asking your question in a different way.";
 
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
     } catch (error) {
