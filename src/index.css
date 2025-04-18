@@ -4,9 +4,21 @@
 
 @layer base {
   :root {
+    /* Base colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    
+    /* Subject-specific colors */
+    --biology: 88 80% 95%;
+    --biology-foreground: 88 30% 30%;
+    
+    --chemistry: 214 90% 95%;
+    --chemistry-foreground: 214 80% 30%;
+    
+    --ict: 255 80% 95%;
+    --ict-foreground: 255 80% 30%;
 
+    /* UI colors */
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
@@ -96,6 +108,49 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+
+/* Custom styles for study notes */
+.prose {
+  @apply text-gray-700 leading-relaxed;
+}
+
+.prose p {
+  @apply mb-4;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  @apply font-medium text-gray-900 mb-2;
 }
