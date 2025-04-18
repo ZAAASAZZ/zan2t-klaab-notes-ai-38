@@ -71,31 +71,31 @@
     --foreground: 213 31% 91%;
 
     /* Subject-specific dark mode colors */
-    --biology: 142 76% 26%;
+    --biology: 142 76% 42%;
     --biology-foreground: 0 0% 100%;
     
-    --chemistry: 214 70% 46%;
+    --chemistry: 214 70% 56%;
     --chemistry-foreground: 0 0% 100%;
     
-    --ict: 262 70% 40%;
+    --ict: 262 70% 60%;
     --ict-foreground: 0 0% 100%;
 
-    --physics: 36 90% 40%;
+    --physics: 36 90% 55%;
     --physics-foreground: 0 0% 100%;
     
-    --maths: 330 70% 50%;
+    --maths: 330 70% 65%;
     --maths-foreground: 0 0% 100%;
     
-    --english: 195 70% 46%;
+    --english: 195 70% 56%;
     --english-foreground: 0 0% 100%;
     
-    --arabic: 14 90% 47%;
+    --arabic: 14 90% 65%;
     --arabic-foreground: 0 0% 100%;
     
-    --french: 225 63% 47%;
+    --french: 225 63% 65%;
     --french-foreground: 0 0% 100%;
     
-    --social: 160 74% 29%;
+    --social: 160 74% 46%;
     --social-foreground: 0 0% 100%;
     
     --card: 224 71% 4%;
@@ -126,6 +126,96 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+
+  /* Enhanced Table Styling */
+  .notes-container table {
+    @apply w-full border-collapse my-4 rounded-lg overflow-hidden shadow-sm;
+  }
+
+  .notes-container thead {
+    @apply bg-blue-500 text-white;
+  }
+
+  .notes-container th {
+    @apply p-3 text-left font-semibold;
+  }
+
+  .notes-container tbody tr:nth-child(odd) {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+  }
+
+  .notes-container tbody tr:nth-child(even) {
+    @apply bg-white dark:bg-gray-900/30;
+  }
+
+  .notes-container td {
+    @apply p-3 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  /* Subject-specific table header colors */
+  .notes-container.biology thead {
+    @apply bg-biology text-biology-foreground;
+  }
+  
+  .notes-container.chemistry thead {
+    @apply bg-chemistry text-chemistry-foreground;
+  }
+
+  .notes-container.physics thead {
+    @apply bg-physics text-physics-foreground;
+  }
+
+  .notes-container.maths thead {
+    @apply bg-maths text-maths-foreground;
+  }
+
+  .notes-container.english thead {
+    @apply bg-english text-english-foreground;
+  }
+
+  .notes-container.arabic thead {
+    @apply bg-arabic text-arabic-foreground;
+  }
+
+  .notes-container.french thead {
+    @apply bg-french text-french-foreground;
+  }
+
+  .notes-container.social thead {
+    @apply bg-social text-social-foreground;
+  }
+
+  .notes-container.ict thead {
+    @apply bg-ict text-ict-foreground;
+  }
+
+  /* Enhanced Headings */
+  .notes-container h2 {
+    @apply text-2xl font-bold mb-4 pb-2 border-b;
+  }
+
+  .notes-container h3 {
+    @apply text-xl font-semibold mt-6 mb-3 flex items-center;
+  }
+
+  /* Key Structures Box */
+  .notes-container .key-structure {
+    @apply bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg my-4 border-l-4 border-blue-500;
+  }
+
+  /* Lists */
+  .notes-container ul {
+    @apply space-y-2 my-4 list-disc pl-6;
+  }
+
+  .notes-container li {
+    @apply pl-2;
+  }
+
+  /* Definition Terms */
+  .notes-container strong {
+    @apply font-semibold text-blue-600 dark:text-blue-400;
+  }
 }
 
 @layer utilities {
@@ -136,6 +226,11 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Text gradient utility */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
   }
 }
 
@@ -180,4 +275,63 @@
 
 .prose h1, .prose h2, .prose h3 {
   @apply font-medium text-gray-900 mb-2 dark:text-gray-100;
+}
+
+/* Enhanced table designs for each subject */
+.biology table th {
+  @apply bg-biology text-white;
+}
+
+.chemistry table th {
+  @apply bg-chemistry text-white;
+}
+
+.physics table th {
+  @apply bg-physics text-white;
+}
+
+.maths table th {
+  @apply bg-maths text-white;
+}
+
+.english table th {
+  @apply bg-english text-white;
+}
+
+.arabic table th {
+  @apply bg-arabic text-white;
+}
+
+.french table th {
+  @apply bg-french text-white;
+}
+
+.social table th {
+  @apply bg-social text-white;
+}
+
+.ict table th {
+  @apply bg-ict text-white;
+}
+
+/* Advanced styling for notes */
+.notes-container table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.notes-container table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.notes-container table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.notes-container table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.notes-container table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
 }

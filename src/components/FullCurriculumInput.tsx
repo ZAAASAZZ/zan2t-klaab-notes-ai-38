@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -38,11 +38,31 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
               {
                 parts: [
                   {
-                    text: `You are an expert study notes organizer. Take these full curriculum notes for ${subject} and split them into 6 blocks. Format each block beautifully with emojis, tables, and clear sections. Keep the structure consistent. Here are the notes to organize:\n\n${content}`
+                    text: `You are an expert study notes organizer. Take these full curriculum notes for ${subject} and split them into 6 blocks. Format each block with proper HTML markup including:
+                    
+                    1. Use <h2> for block titles with appropriate emojis, for example: "<h2>📘 Block 1: [Topic]</h2>"
+                    2. Use <h3> for section headers with relevant emojis, for example: "<h3>🧬 Section Title</h3>"
+                    3. Use properly formatted HTML tables with <table>, <thead>, <tbody>, <tr>, <th>, <td> elements for tabular data
+                    4. Use <ul> and <li> for bullet points
+                    5. Use <strong> tags for important terms and definitions
+                    6. Use <div class="key-structure"> for key structures or special notes
+                    7. Each block must have a clear title and be clearly separated from other blocks
+                    8. Add relevant emojis to sections to make content visually engaging
+                    
+                    Important: Make sure to properly close all HTML tags and validate HTML structure.
+                    All HTML must be properly formatted and safe to insert directly using innerHTML.
+                    Create 6 blocks with logical divisions based on related topics.
+                    
+                    Here are the notes to organize:\n\n${content}`
                   }
                 ]
               }
-            ]
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              topP: 0.8,
+              maxOutputTokens: 8000
+            }
           })
         }
       );
@@ -58,14 +78,42 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
         throw new Error("No content generated");
       }
 
-      // Split the content into blocks based on markdown headers
-      const blocks = enhancedContent.split(/^## Block \d+:/m)
-        .filter(block => block.trim())
-        .reduce((acc, block, index) => {
-          acc[`${index + 1}`] = block.trim();
-          return acc;
-        }, {} as { [key: string]: string });
+      // Split the content into blocks based on h2 headers
+      const blockRegex = /<h2.*?>.*?Block\s*(\d+).*?<\/h2>([\s\S]*?)(?=<h2|$)/gi;
+      let match;
+      const blocks: { [key: string]: string } = {};
+      
+      while ((match = blockRegex.exec(enhancedContent)) !== null) {
+        const blockNumber = match[1];
+        const blockContent = match[0].trim();
+        blocks[blockNumber] = blockContent;
+      }
 
+      // If we didn't get all 6 blocks, handle the error
+      if (Object.keys(blocks).length < 6) {
+        // Check if the content is properly formatted but missing the block headers
+        const sections = enhancedContent.split('<h2');
+        if (sections.length > 1) {
+          // Process each section
+          for (let i = 1; i <= Math.min(sections.length - 1, 6); i++) {
+            const section = '<h2' + sections[i];
+            blocks[i.toString()] = section.trim();
+          }
+        } else {
+          // Fallback: divide content into roughly equal parts
+          const dividedContent = enhancedContent.split("\n\n");
+          const partsPerBlock = Math.ceil(dividedContent.length / 6);
+          
+          for (let i = 0; i < 6; i++) {
+            const start = i * partsPerBlock;
+            const end = Math.min(start + partsPerBlock, dividedContent.length);
+            const blockContent = dividedContent.slice(start, end).join("\n\n");
+            blocks[(i + 1).toString()] = `<h2>📘 Block ${i + 1}</h2>\n${blockContent}`;
+          }
+        }
+      }
+
+      // Save all blocks
       onSaveNotes(blocks);
       setIsOpen(false);
       toast.success("Notes generated and organized into blocks!");
@@ -94,7 +142,10 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
       <SheetContent className="w-[90vw] max-w-2xl sm:w-[600px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            Upload Full Curriculum for {subject}
+            <span className={cn("text-gradient bg-gradient-to-r", 
+              `from-${subject} to-${subject}/70`)}>
+              Upload Full Curriculum for {subject.charAt(0).toUpperCase() + subject.slice(1)}
+            </span>
           </SheetTitle>
         </SheetHeader>
         
@@ -110,7 +161,8 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
             <Button
               variant="default"
               className={cn(
-                `bg-${subject}`,
+                "bg-gradient-to-r",
+                `from-${subject} to-${subject}/80`,
                 "transition-all hover:opacity-90"
               )}
               onClick={handleGenerateNotes}
@@ -122,7 +174,10 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
                   Processing...
                 </>
               ) : (
-                "Generate Structured Notes"
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Generate Structured Notes
+                </>
               )}
             </Button>
           </div>
