@@ -4,19 +4,16 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-
 interface StudyAssistantProps {
   notes: Record<string, Record<string, string>>;
   selectedSubject: string | null;
 }
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   hasMore?: boolean;
   expandedContent?: string;
 }
-
 export function StudyAssistant({
   notes,
   selectedSubject
@@ -26,7 +23,6 @@ export function StudyAssistant({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedMessages, setExpandedMessages] = useState<number[]>([]);
-
   const generateContextFromNotes = () => {
     if (!selectedSubject || !notes[selectedSubject]) return "";
     let context = "";
@@ -35,7 +31,6 @@ export function StudyAssistant({
     });
     return context;
   };
-
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     setMessages(prev => [...prev, {
@@ -46,7 +41,7 @@ export function StudyAssistant({
     setMessage("");
     try {
       const context = generateContextFromNotes();
-      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA", {
+      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -55,36 +50,38 @@ export function StudyAssistant({
           contents: [{
             parts: [{
               text: `🧠 Simple AI Study Assistant – Minimal & Easy Answering Prompt
-              ✅ When Answering:
-              Use short sentences and easy words.
+You are a study helper AI made to answer school subject questions in a way that is very simple and easy to understand.
 
-              Always give the main answer first, in 1 or 2 short lines.
+✅ When Answering:
+Use short sentences and easy words.
 
-              Only explain more if the user clicks "Show More".
+Always give the main answer first, in 1 or 2 short lines.
 
-              Keep the tone friendly and clear — like a helpful tutor for kids or beginners.
+Only explain more if the user clicks "Show More".
 
-              ✨ Example:
-              Q: What is the unit of measuring force?
-              A: The unit of force is the Newton (N).
+Keep the tone friendly and clear — like a helpful tutor for kids or beginners.
 
-              (if user clicks "Show More")
+✨ Example:
+Q: What is the unit of measuring force?
+A: The unit of force is the Newton (N).
 
-              A Newton is how much force it takes to move 1 kg by 1 meter per second.
-              For example, pushing a small box might take 10 Newtons.
+(if user clicks "Show More")
 
-              📌 Extra Tips:
-              Never use hard words unless you explain them simply.
+A Newton is how much force it takes to move 1 kg by 1 meter per second.
+For example, pushing a small box might take 10 Newtons.
 
-              Don't say "as you know" or "in general" — just answer.
+📌 Extra Tips:
+Never use hard words unless you explain them simply.
 
-              Always make it feel calm, not rushed or robotic.
+Don't say "as you know" or "in general" — just answer.
 
-              Split your response with "---" between the brief and expanded answer.
+Always make it feel calm, not rushed or robotic.
 
-              Question: ${message}
+Split your response with "---" between the brief and expanded answer.
 
-              Context (use this knowledge but don't mention it): ${context}`
+Question: ${message}
+
+Context (use this knowledge but don't mention it): ${context}`
             }]
           }],
           generationConfig: {
@@ -116,11 +113,9 @@ export function StudyAssistant({
       setIsLoading(false);
     }
   };
-
   const toggleExpand = (index: number) => {
     setExpandedMessages(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
   };
-
   return <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" className={cn("rounded-full fixed bottom-6 right-6 shadow-lg", "hover:shadow-xl transition-all duration-300", selectedSubject ? `hover:bg-${selectedSubject}/10 hover:text-${selectedSubject}` : "")}>

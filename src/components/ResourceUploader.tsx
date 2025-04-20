@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     
+    // Create preview for images
     const filesWithPreview = selectedFiles.map(file => {
       const fileWithPreview = file as FileWithPreview;
       if (file.type.startsWith("image/")) {
@@ -44,6 +46,7 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
     
     setFiles(prev => [...prev, ...filesWithPreview]);
     
+    // Clear input value so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -54,6 +57,7 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
   const removeFile = (index: number) => {
     setFiles(prev => {
       const newFiles = [...prev];
+      // Revoke object URL for previews to prevent memory leaks
       if (newFiles[index].preview) {
         URL.revokeObjectURL(newFiles[index].preview!);
       }
@@ -79,27 +83,36 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
     setProcessingStatus("Analyzing uploaded resources...");
 
     try {
+      // Extract text content from files
+      // In a real implementation, we would use OCR for images and PDF parsing for PDFs
+      // For this demo, we'll simulate processing by creating sample data
+      
       let combinedContent = "";
       
+      // In a real implementation, we'd extract text from different file types
+      // For now, we'll just gather file names and types
       for (const file of files) {
         combinedContent += `${file.name} (${file.type})\n`;
         
+        // For demonstration, read image files as data URLs
         if (file.type.startsWith("image/")) {
+          // In a real implementation, we would use OCR here
           setProcessingStatus(`Extracting text from ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing time
         } else if (file.type === "application/pdf") {
           setProcessingStatus(`Parsing PDF: ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate processing time
         } else {
           setProcessingStatus(`Processing ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 800));
+          await new Promise(resolve => setTimeout(resolve, 800)); // Simulate processing time
         }
       }
 
       setProcessingStatus("Generating structured notes...");
       
+      // Call Gemini API with our system prompt and the extracted content
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU",
         {
           method: "POST",
           headers: {
@@ -111,29 +124,29 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
                 parts: [
                   {
                     text: `You are an AI-powered academic note generator.
-                    Your task is to process uploaded educational resources (PDFs, images, docs, and slides), then create flawless, high-quality study notes for ${subject} subject and block ${selectedBlock}.
+Your task is to process uploaded educational resources (PDFs, images, docs, and slides), then create flawless, high-quality study notes for ${subject} subject and block ${selectedBlock}.
 
-                    These notes must be:
-                    - 100% accurate
-                    - Clear and simple
-                    - Visually structured (tables, diagrams, icons, headings)
-                    - Memorization-ready
-                    - Perfectly aligned with the document's learning objectives or indicators
+These notes must be:
+- 100% accurate
+- Clear and simple
+- Visually structured (tables, diagrams, icons, headings)
+- Memorization-ready
+- Perfectly aligned with the document's learning objectives or indicators
 
-                    Format the notes using proper HTML structure:
-                    1. Use <h2> for main section titles with appropriate emojis (e.g., "<h2>📘 Main Topic</h2>")
-                    2. Use <h3> for subsections with relevant emojis (e.g., "<h3>🧬 Subsection</h3>")
-                    3. Create properly formatted HTML tables with <table>, <thead>, <tbody>, <tr>, <th>, <td> elements for tabular data
-                    4. Use <ul> and <li> for bullet points
-                    5. Use <strong> for important terms/definitions
-                    6. Use <div class="key-structure"> for key points or special notes
+Format the notes using proper HTML structure:
+1. Use <h2> for main section titles with appropriate emojis (e.g., "<h2>📘 Main Topic</h2>")
+2. Use <h3> for subsections with relevant emojis (e.g., "<h3>🧬 Subsection</h3>")
+3. Create properly formatted HTML tables with <table>, <thead>, <tbody>, <tr>, <th>, <td> elements for tabular data
+4. Use <ul> and <li> for bullet points
+5. Use <strong> for important terms/definitions
+6. Use <div class="key-structure"> for key points or special notes
 
-                    Based on these uploaded resources:
-                    ${combinedContent}
+Based on these uploaded resources:
+${combinedContent}
 
-                    Create comprehensive study notes for ${subject} Block ${selectedBlock} that are perfect for studying, memorizing, and reviewing.
+Create comprehensive study notes for ${subject} Block ${selectedBlock} that are perfect for studying, memorizing, and reviewing.
 
-                    NOTE: Since I don't have the actual content of the files, please generate realistic educational notes about common ${subject} topics for Block ${selectedBlock} that would be typically taught in grade 9.`
+NOTE: Since I don't have the actual content of the files, please generate realistic educational notes about common ${subject} topics for Block ${selectedBlock} that would be typically taught in grade 9.`
                   }
                 ]
               }
@@ -159,8 +172,9 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
       }
 
       setProcessingStatus("Verifying and optimizing notes...");
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate verification time
+      
+      // Save to the selected block
       const blockNotes = {
         [selectedBlock]: generatedContent
       };
