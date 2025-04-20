@@ -163,7 +163,7 @@ Context (use this knowledge but don't mention it): ${context}`
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
-            Study Assistant AI
+            Eyad
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Ask questions about your notes or any study topic

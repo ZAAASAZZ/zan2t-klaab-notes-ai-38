@@ -1,0 +1,95 @@
+
+/* PDF Export Styles */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .pdf-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 60px;
+    opacity: 0.15;
+    z-index: -1;
+    color: #000;
+    pointer-events: none;
+  }
+  
+  .pdf-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .pdf-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #eaeaea;
+    font-size: 9pt;
+  }
+  
+  .light table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+  
+  .light table, .light th, .light td {
+    border: 1px solid #eaeaea;
+  }
+  
+  .light th, .light td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .light th {
+    background-color: #f8f9fa;
+  }
+  
+  .light h2, .light h3 {
+    color: #1976d2;
+  }
+  
+  .light .key-structure {
+    background-color: #f8f9fa;
+    border-left: 4px solid #1976d2;
+    padding: 10px;
+    margin: 15px 0;
+  }
+  
+  .dark table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+  
+  .dark table, .dark th, .dark td {
+    border: 1px solid #555;
+  }
+  
+  .dark th, .dark td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .dark th {
+    background-color: #333;
+  }
+  
+  .dark h2, .dark h3 {
+    color: #90caf9;
+  }
+  
+  .dark .key-structure {
+    background-color: #333;
+    border-left: 4px solid #90caf9;
+    padding: 10px;
+    margin: 15px 0;
+  }
+}

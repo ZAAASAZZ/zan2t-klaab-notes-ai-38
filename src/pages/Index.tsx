@@ -4,6 +4,7 @@ import { BlockGrid } from "@/components/BlockGrid";
 import { NoteEditor } from "@/components/NoteEditor";
 import { FullCurriculumInput } from "@/components/FullCurriculumInput";
 import { ResourceUploader } from "@/components/ResourceUploader";
+import { PdfExport } from "@/components/PdfExport";
 import { loadNotes, saveNotes } from "@/utils/storage";
 import { Button } from "@/components/ui/button";
 import { Edit3, Moon, Sun, BookOpen } from "lucide-react";
@@ -180,10 +181,25 @@ export default function Index() {
                     </span>
                     {selectedSubject.charAt(0).toUpperCase() + selectedSubject.slice(1)} - Block {selectedBlock}
                   </CardTitle>
-                  <Button onClick={() => setIsEditing(true)} variant="ghost" size="sm" className={cn("rounded-full", `hover:bg-${selectedSubject}/10 hover:text-${selectedSubject}`)}>
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {notes[selectedSubject]?.[selectedBlock] && (
+                      <PdfExport 
+                        content={notes[selectedSubject][selectedBlock]} 
+                        subject={selectedSubject} 
+                        block={selectedBlock} 
+                        isDarkMode={isDarkMode}
+                      />
+                    )}
+                    <Button 
+                      onClick={() => setIsEditing(true)} 
+                      variant="ghost" 
+                      size="sm" 
+                      className={cn("rounded-full", `hover:bg-${selectedSubject}/10 hover:text-${selectedSubject}`)}
+                    >
+                      <Edit3 className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                  </div>
                 </CardHeader>
                 
                 <CardContent className={cn("notes-container prose max-w-none dark:prose-invert px-6 pb-8", `prose-headings:text-${selectedSubject}`)}>

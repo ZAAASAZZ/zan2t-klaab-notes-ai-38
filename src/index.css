@@ -118,6 +118,8 @@
   }
 }
 
+@import './components/ExportStyles.css';
+
 @layer base {
   * {
     @apply border-border;
