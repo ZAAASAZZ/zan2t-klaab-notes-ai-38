@@ -6,13 +6,15 @@ import { FullCurriculumInput } from "@/components/FullCurriculumInput";
 import { ResourceUploader } from "@/components/ResourceUploader";
 import { loadNotes, saveNotes } from "@/utils/storage";
 import { Button } from "@/components/ui/button";
-import { Edit3, Moon, Sun, Search, BookOpen } from "lucide-react";
+import { Edit3, Moon, Sun, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { StudyAssistant } from "@/components/StudyAssistant";
 import { TutorialGuide } from "@/components/TutorialGuide";
+import { StudyPlan } from "@/components/StudyPlan";
+import { SearchNotes } from "@/components/SearchNotes";
 
 export default function Index() {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -96,6 +98,11 @@ export default function Index() {
     ict: "💻"
   };
 
+  const handleSelectSearchResult = (subject: string, block: number) => {
+    setSelectedSubject(subject);
+    setSelectedBlock(block);
+  };
+
   return <div className={cn("min-h-screen bg-gradient-to-br", "from-gray-50 to-white", "transition-colors duration-300", isDarkMode && "dark bg-gradient-to-br from-gray-900 to-gray-800")}>
       <header className={cn("py-6 px-6", "bg-white/90 backdrop-blur-md shadow-sm", "dark:bg-gray-800/90 dark:border-b dark:border-gray-700", "sticky top-0 z-10")}>
         <div className="container mx-auto flex justify-between items-center">
@@ -114,29 +121,12 @@ export default function Index() {
           
           <div className="flex gap-2 relative">
             <TutorialGuide />
-            <AnimatePresence>
-              {isSearchOpen && <motion.div initial={{
-              width: 0,
-              opacity: 0
-            }} animate={{
-              width: "240px",
-              opacity: 1
-            }} exit={{
-              width: 0,
-              opacity: 0
-            }} transition={{
-              duration: 0.3
-            }} className="mr-2">
-                  <input id="searchInput" type="text" placeholder="Search notes..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className={cn("w-full px-4 py-2", "border border-gray-200 rounded-full", "focus:outline-none focus:ring-2", selectedSubject ? `focus:ring-${selectedSubject}` : "focus:ring-blue-500", "dark:bg-gray-700 dark:border-gray-600 dark:text-white")} />
-                </motion.div>}
-            </AnimatePresence>
+            <StudyPlan />
+            <StudyAssistant notes={notes} selectedSubject={selectedSubject} />
+            <SearchNotes notes={notes} onSelectNote={handleSelectSearchResult} />
             
             <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="rounded-full bg-gray-100 dark:bg-gray-700">
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-            
-            <Button variant="outline" size="icon" className="rounded-full" onClick={toggleSearch}>
-              <Search className="h-5 w-5" />
             </Button>
           </div>
         </div>
