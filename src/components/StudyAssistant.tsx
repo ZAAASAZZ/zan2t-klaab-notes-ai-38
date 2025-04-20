@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Bot, Send, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -178,7 +177,7 @@ Context (use this knowledge but don't mention it): ${context}`
                 animate={{ opacity: 1 }}
                 className="text-center text-muted-foreground p-4"
               >
-                Ask me anything about your {selectedSubject || "studies"}!
+                Hey! I'm Eyad. Ask me anything about your {selectedSubject || "studies"}!
               </motion.div>
             )}
             {messages.map((msg, index) => (

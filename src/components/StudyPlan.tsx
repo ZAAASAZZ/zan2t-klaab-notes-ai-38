@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Check, Calendar, X } from "lucide-react";
+import { Check, Calendar, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -69,29 +69,26 @@ export function StudyPlan() {
         </DialogHeader>
 
         <div className="mt-4 space-y-6">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-6 rounded-xl text-white shadow-lg mb-8">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 p-6 rounded-xl text-white shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <Star className="h-6 w-6" />
               <h3 className="text-xl font-semibold">Your Progress</h3>
-              <span className="text-3xl font-bold">{calculateProgress()}%</span>
+              <span className="ml-auto text-3xl font-bold">{calculateProgress()}%</span>
             </div>
-            <p className="mb-4 text-white/90">
+            <Progress value={calculateProgress()} className="h-3 bg-white/20" />
+            <p className="mt-4 text-sm text-white/90">
               Keep going! You're making great progress tracking your study blocks.
             </p>
-            <Progress value={calculateProgress()} className="h-4 bg-white/20 rounded-full" />
-            <div className="flex justify-between mt-3 text-sm text-white/80">
-              <span>0%</span>
-              <span>Target: 100%</span>
-            </div>
           </div>
 
-          <div className="rounded-lg border shadow-sm overflow-hidden bg-white dark:bg-gray-800/90">
+          <div className="overflow-hidden rounded-lg border shadow-sm dark:border-gray-800">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 bg-muted/50 dark:bg-gray-700/60 font-medium">Blocks</th>
+                  <tr className="bg-muted/50 dark:bg-gray-800/50">
+                    <th className="text-left py-3 px-4 font-medium">Blocks</th>
                     {subjects.map(subject => (
-                      <th key={subject.name} className={cn("px-4 py-3 text-center", subject.color, "dark:opacity-90")}>
+                      <th key={subject.name} className={cn("px-4 py-3 text-center font-medium", subject.color)}>
                         {subject.name}
                       </th>
                     ))}
@@ -99,8 +96,8 @@ export function StudyPlan() {
                 </thead>
                 <tbody>
                   {Array.from({ length: 6 }, (_, i) => i + 1).map(block => (
-                    <tr key={block} className="border-t hover:bg-muted/30 dark:hover:bg-gray-700/20 transition-colors">
-                      <td className="py-3 px-4 font-medium bg-muted/30 dark:bg-gray-700/30">Block {block}</td>
+                    <tr key={block} className="border-t hover:bg-muted/30 dark:hover:bg-gray-800/30">
+                      <td className="py-3 px-4 font-medium">{`Block ${block}`}</td>
                       {subjects.map(subject => {
                         const isComplete = progress[`${subject.name}-${block}`];
                         return (
@@ -109,16 +106,12 @@ export function StudyPlan() {
                               variant={isComplete ? "default" : "outline"}
                               size="icon"
                               className={cn(
-                                "h-9 w-9 p-0 rounded-full transition-all duration-300", 
-                                isComplete ? 
-                                  "bg-green-500 text-white hover:bg-green-600 shadow-md" : 
-                                  "hover:scale-110 hover:shadow-md dark:border-gray-600"
+                                "h-8 w-8 rounded-full transition-all duration-300",
+                                isComplete && "bg-green-500 hover:bg-green-600"
                               )}
                               onClick={() => toggleBlock(subject.name, block)}
                             >
-                              {isComplete ? (
-                                <Check className="h-4 w-4" />
-                              ) : null}
+                              {isComplete && <Check className="h-4 w-4" />}
                             </Button>
                           </td>
                         );
@@ -131,8 +124,11 @@ export function StudyPlan() {
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
-            <p>Your progress is automatically saved on your device</p>
-            <p className="text-xs">All your data is stored securely on your device and works offline</p>
+            <div className="flex items-center justify-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Your progress is automatically saved on your device
+            </div>
+            <p className="text-xs mt-1">All your data is stored securely on your device and works offline</p>
           </div>
         </div>
       </DialogContent>
