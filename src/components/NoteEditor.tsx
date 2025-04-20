@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -47,7 +46,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
     
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA",
         {
           method: "POST",
           headers: {
@@ -58,7 +57,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
               {
                 parts: [
                   {
-                    text: `Transform these study notes into well-structured HTML format with beautiful styling for ${subject} notes. 
+                    text: `Transform these study notes into well-structured HTML format with beautiful styling for ${subject} notes.
                     
                     1. Use <h2> for main section titles with appropriate emojis (e.g., "<h2>📘 Main Topic</h2>")
                     2. Use <h3> for subsections with relevant emojis (e.g., "<h3>🧬 Subsection</h3>")
