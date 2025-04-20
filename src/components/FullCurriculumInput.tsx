@@ -12,10 +12,14 @@ interface FullCurriculumInputProps {
   onSaveNotes: (blockNotes: { [block: string]: string }) => void;
 }
 
+type ImportMode = 'full' | 'single';
+
 export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [importMode, setImportMode] = useState<ImportMode>('full');
+  const [selectedBlock, setSelectedBlock] = useState("1");
 
   const handleGenerateNotes = async () => {
     if (!content.trim()) {
@@ -26,6 +30,31 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
     setIsProcessing(true);
 
     try {
+      let prompt = `You are an expert study notes organizer. `;
+      
+      if (importMode === 'full') {
+        prompt += `Take these full curriculum notes for ${subject} and split them into 6 blocks.`;
+      } else {
+        prompt += `Take these notes for ${subject} Block ${selectedBlock} and organize them into a well-structured format.`;
+      }
+      
+      prompt += ` Format each block with proper HTML markup including:
+                    
+      1. Use <h2> for block titles with appropriate emojis, for example: "<h2>📘 Block ${importMode === 'single' ? selectedBlock : '[Number]'}: [Topic]</h2>"
+      2. Use <h3> for section headers with relevant emojis, for example: "<h3>🧬 Section Title</h3>"
+      3. Use properly formatted HTML tables with <table>, <thead>, <tbody>, <tr>, <th>, <td> elements for tabular data
+      4. Use <ul> and <li> for bullet points
+      5. Use <strong> tags for important terms and definitions
+      6. Use <div class="key-structure"> for key structures or special notes
+      7. Each block must have a clear title and be clearly separated from other blocks
+      8. Add relevant emojis to sections to make content visually engaging
+      
+      Important: Make sure to properly close all HTML tags and validate HTML structure.
+      All HTML must be properly formatted and safe to insert directly using innerHTML.
+      ${importMode === 'full' ? 'Create 6 blocks with logical divisions based on related topics.' : 'Focus on creating one well-organized block of content.'}
+      
+      Here are the notes to organize:\n\n${content}`;
+
       const response = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU",
         {
@@ -36,26 +65,7 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
           body: JSON.stringify({
             contents: [
               {
-                parts: [
-                  {
-                    text: `You are an expert study notes organizer. Take these full curriculum notes for ${subject} and split them into 6 blocks. Format each block with proper HTML markup including:
-                    
-                    1. Use <h2> for block titles with appropriate emojis, for example: "<h2>📘 Block 1: [Topic]</h2>"
-                    2. Use <h3> for section headers with relevant emojis, for example: "<h3>🧬 Section Title</h3>"
-                    3. Use properly formatted HTML tables with <table>, <thead>, <tbody>, <tr>, <th>, <td> elements for tabular data
-                    4. Use <ul> and <li> for bullet points
-                    5. Use <strong> tags for important terms and definitions
-                    6. Use <div class="key-structure"> for key structures or special notes
-                    7. Each block must have a clear title and be clearly separated from other blocks
-                    8. Add relevant emojis to sections to make content visually engaging
-                    
-                    Important: Make sure to properly close all HTML tags and validate HTML structure.
-                    All HTML must be properly formatted and safe to insert directly using innerHTML.
-                    Create 6 blocks with logical divisions based on related topics.
-                    
-                    Here are the notes to organize:\n\n${content}`
-                  }
-                ]
+                parts: [{ text: prompt }]
               }
             ],
             generationConfig: {
@@ -76,6 +86,16 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
 
       if (!enhancedContent) {
         throw new Error("No content generated");
+      }
+
+      if (importMode === 'single') {
+        // For single block, just save to the selected block
+        onSaveNotes({
+          [selectedBlock]: enhancedContent
+        });
+        setIsOpen(false);
+        toast.success(`Notes generated for Block ${selectedBlock}!`);
+        return;
       }
 
       // Split the content into blocks based on h2 headers
@@ -144,16 +164,62 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
           <SheetTitle className="flex items-center gap-2">
             <span className={cn("text-gradient bg-gradient-to-r", 
               `from-${subject} to-${subject}/70`)}>
-              Upload Full Curriculum for {subject.charAt(0).toUpperCase() + subject.slice(1)}
+              Upload {importMode === 'full' ? 'Full Curriculum' : `Block ${selectedBlock}`} for {subject.charAt(0).toUpperCase() + subject.slice(1)}
             </span>
           </SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-6">
+          <div className="mb-4 space-y-4">
+            <div className="flex flex-col space-y-2">
+              <label className="text-sm font-medium">Import Mode</label>
+              <div className="flex gap-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    checked={importMode === 'full'}
+                    onChange={() => setImportMode('full')}
+                    className="h-4 w-4 text-blue-600"
+                  />
+                  <span>Full Curriculum</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    checked={importMode === 'single'}
+                    onChange={() => setImportMode('single')}
+                    className="h-4 w-4 text-blue-600"
+                  />
+                  <span>Single Block</span>
+                </label>
+              </div>
+            </div>
+
+            {importMode === 'single' && (
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium">Select Block</label>
+                <select
+                  value={selectedBlock}
+                  onChange={(e) => setSelectedBlock(e.target.value)}
+                  className="w-full max-w-[200px] rounded-md border border-input bg-background px-3 py-1"
+                >
+                  {[1, 2, 3, 4, 5, 6].map(num => (
+                    <option key={num} value={num.toString()}>
+                      Block {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+          
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder={`Paste all your ${subject} notes here. The AI will automatically organize them into blocks...`}
+            placeholder={importMode === 'full' 
+              ? `Paste all your ${subject} notes here. The AI will automatically organize them into blocks...`
+              : `Paste your ${subject} Block ${selectedBlock} notes here...`
+            }
             className="h-[400px] resize-none"
           />
           
@@ -176,7 +242,7 @@ export function FullCurriculumInput({ subject, onSaveNotes }: FullCurriculumInpu
               ) : (
                 <>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Structured Notes
+                  Generate Notes
                 </>
               )}
             </Button>
