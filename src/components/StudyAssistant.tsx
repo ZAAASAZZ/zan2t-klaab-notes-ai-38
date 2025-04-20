@@ -4,16 +4,19 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+
 interface StudyAssistantProps {
   notes: Record<string, Record<string, string>>;
   selectedSubject: string | null;
 }
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   hasMore?: boolean;
   expandedContent?: string;
 }
+
 export function StudyAssistant({
   notes,
   selectedSubject
@@ -23,6 +26,7 @@ export function StudyAssistant({
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedMessages, setExpandedMessages] = useState<number[]>([]);
+
   const generateContextFromNotes = () => {
     if (!selectedSubject || !notes[selectedSubject]) return "";
     let context = "";
@@ -31,6 +35,7 @@ export function StudyAssistant({
     });
     return context;
   };
+
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     setMessages(prev => [...prev, {
@@ -41,7 +46,7 @@ export function StudyAssistant({
     setMessage("");
     try {
       const context = generateContextFromNotes();
-      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU", {
+      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -113,9 +118,11 @@ Context (use this knowledge but don't mention it): ${context}`
       setIsLoading(false);
     }
   };
+
   const toggleExpand = (index: number) => {
     setExpandedMessages(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
   };
+
   return <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" className={cn("rounded-full fixed bottom-6 right-6 shadow-lg", "hover:shadow-xl transition-all duration-300", selectedSubject ? `hover:bg-${selectedSubject}/10 hover:text-${selectedSubject}` : "")}>

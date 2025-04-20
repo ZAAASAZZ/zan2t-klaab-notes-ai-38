@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Save, X, Code, Check } from "lucide-react";
@@ -18,8 +17,14 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
   const [noteContent, setNoteContent] = useState(content);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [htmlMode, setHtmlMode] = useState(false);
-  const [previewContent, setPreviewContent] = useState(content);
+  const [previewContent, setPreviewContent] = useState("");
   const [activeTab, setActiveTab] = useState("edit");
+
+  useEffect(() => {
+    if (content) {
+      enhanceWithGemini(content, true);
+    }
+  }, []);
 
   const handleSave = () => {
     onSave(noteContent);
@@ -37,9 +42,11 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
     toast.success("Preview updated");
   };
 
-  const enhanceWithGemini = async () => {
-    if (!noteContent.trim()) {
-      toast.error("Please add some content before enhancing");
+  const enhanceWithGemini = async (contentToEnhance: string, isInitial: boolean = false) => {
+    if (!contentToEnhance.trim()) {
+      if (!isInitial) {
+        toast.error("Please add some content before enhancing");
+      }
       return;
     }
 
@@ -47,7 +54,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
     
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA",
         {
           method: "POST",
           headers: {
@@ -73,7 +80,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
 
                     Format the content to look like a professionally designed study note that's visually clear and well-organized.
                     
-                    Here are the notes to enhance:\n\n${noteContent}`
+                    Here are the notes to enhance:\n\n${contentToEnhance}`
                   }
                 ]
               }
@@ -98,13 +105,17 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
         setNoteContent(enhancedContent);
         setPreviewContent(enhancedContent);
         setActiveTab("preview");
-        toast.success("Notes enhanced with AI!");
+        if (!isInitial) {
+          toast.success("Notes enhanced with AI!");
+        }
       } else {
         throw new Error("Unexpected response format from Gemini API");
       }
     } catch (error) {
       console.error("Error enhancing with Gemini:", error);
-      toast.error("Failed to enhance notes. Please try again.");
+      if (!isInitial) {
+        toast.error("Failed to enhance notes. Please try again.");
+      }
     } finally {
       setIsEnhancing(false);
     }

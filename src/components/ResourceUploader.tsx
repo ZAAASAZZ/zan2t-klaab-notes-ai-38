@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +34,6 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     
-    // Create preview for images
     const filesWithPreview = selectedFiles.map(file => {
       const fileWithPreview = file as FileWithPreview;
       if (file.type.startsWith("image/")) {
@@ -46,7 +44,6 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
     
     setFiles(prev => [...prev, ...filesWithPreview]);
     
-    // Clear input value so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -57,7 +54,6 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
   const removeFile = (index: number) => {
     setFiles(prev => {
       const newFiles = [...prev];
-      // Revoke object URL for previews to prevent memory leaks
       if (newFiles[index].preview) {
         URL.revokeObjectURL(newFiles[index].preview!);
       }
@@ -83,36 +79,27 @@ export function ResourceUploader({ subject, onGenerateNotes }: ResourceUploaderP
     setProcessingStatus("Analyzing uploaded resources...");
 
     try {
-      // Extract text content from files
-      // In a real implementation, we would use OCR for images and PDF parsing for PDFs
-      // For this demo, we'll simulate processing by creating sample data
-      
       let combinedContent = "";
       
-      // In a real implementation, we'd extract text from different file types
-      // For now, we'll just gather file names and types
       for (const file of files) {
         combinedContent += `${file.name} (${file.type})\n`;
         
-        // For demonstration, read image files as data URLs
         if (file.type.startsWith("image/")) {
-          // In a real implementation, we would use OCR here
           setProcessingStatus(`Extracting text from ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing time
+          await new Promise(resolve => setTimeout(resolve, 1000));
         } else if (file.type === "application/pdf") {
           setProcessingStatus(`Parsing PDF: ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate processing time
+          await new Promise(resolve => setTimeout(resolve, 1500));
         } else {
           setProcessingStatus(`Processing ${file.name}...`);
-          await new Promise(resolve => setTimeout(resolve, 800)); // Simulate processing time
+          await new Promise(resolve => setTimeout(resolve, 800));
         }
       }
 
       setProcessingStatus("Generating structured notes...");
       
-      // Call Gemini API with our system prompt and the extracted content
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC014GbaKqQEtiyNX6rk2JTgwNyxm_89IU",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBifBlQrTA5TAEQVCuTMJ1egnKSZ1vhiHA",
         {
           method: "POST",
           headers: {
@@ -172,9 +159,8 @@ NOTE: Since I don't have the actual content of the files, please generate realis
       }
 
       setProcessingStatus("Verifying and optimizing notes...");
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate verification time
-      
-      // Save to the selected block
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const blockNotes = {
         [selectedBlock]: generatedContent
       };
