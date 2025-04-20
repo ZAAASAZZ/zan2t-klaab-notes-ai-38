@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
     toast.success("Preview updated");
   };
 
+  // Let's modify the function to fix the TypeScript error
   const enhanceWithGemini = async (contentToEnhance: string, isInitial: boolean = false) => {
     if (!contentToEnhance.trim()) {
       if (!isInitial) {
@@ -119,6 +121,11 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
     } finally {
       setIsEnhancing(false);
     }
+  };
+
+  // Create a new handler for the button click that correctly passes the current content
+  const handleEnhanceClick = () => {
+    enhanceWithGemini(noteContent);
   };
 
   return (
@@ -200,7 +207,7 @@ export function NoteEditor({ content, onSave, subject, onClose }: NoteEditorProp
           </Button>
           
           <Button
-            onClick={enhanceWithGemini}
+            onClick={handleEnhanceClick}
             variant="outline"
             disabled={isEnhancing}
             className="border border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700"
